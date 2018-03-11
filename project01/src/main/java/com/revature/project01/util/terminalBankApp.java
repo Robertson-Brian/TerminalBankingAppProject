@@ -5,7 +5,7 @@ import java.util.Scanner;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import com.revature.project01.tools.ConsoleBankAppTools;
+import com.revature.project01.tools.terminalBankAppTools;
 
 public class terminalBankApp 
 {
@@ -26,11 +26,11 @@ public class terminalBankApp
         Person DefaultEmployee = new Employee("emp", "123", 'e');
         Person testCustomer = new Customer("cst", "123", 'c');
         
-        ConsoleBankAppTools.serialize(DefaultAdmin, ("Admin/adm.BankingApp"));
-        ConsoleBankAppTools.serialize(DefaultEmployee, ("Employee/emp.BankingApp"));
-        ConsoleBankAppTools.serialize(testCustomer, ("Customer/cst.BankingApp"));
+        terminalBankAppTools.serialize(DefaultAdmin, ("Admin/adm.BankingApp"));
+        terminalBankAppTools.serialize(DefaultEmployee, ("Employee/emp.BankingApp"));
+        terminalBankAppTools.serialize(testCustomer, ("Customer/cst.BankingApp"));
         
-    	nextAccountNumber = ConsoleBankAppTools.getNextAccountNum();
+    	nextAccountNumber = terminalBankAppTools.getNextAccountNum();
 
     	String input = "z";
     	do

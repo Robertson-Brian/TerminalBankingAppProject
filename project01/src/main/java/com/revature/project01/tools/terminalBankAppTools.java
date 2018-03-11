@@ -2,6 +2,7 @@ package com.revature.project01.tools;
 
 import java.io.*;
 
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.revature.project01.util.terminalBankApp;
 
 
-public class ConsoleBankAppTools 
+public class terminalBankAppTools 
 {
     static final Logger logger = Logger.getLogger(terminalBankApp.class);
     

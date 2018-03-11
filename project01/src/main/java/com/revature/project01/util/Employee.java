@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.revature.project01.tools.ConsoleBankAppTools;
+import com.revature.project01.tools.terminalBankAppTools;
 
 public class Employee extends Person
 {
@@ -23,13 +23,13 @@ public class Employee extends Person
 	   	
 	   	ArrayList<File> arrayList = new ArrayList<File>();
 	   	
-	   	ConsoleBankAppTools.getFiles("Account/Pending", arrayList);
+	   	terminalBankAppTools.getFiles("Account/Pending", arrayList);
 	   	
 	   	for(File elem : arrayList)
 	   	{
 	   		Account displayAccount = new Account();
 	   		
-		   	displayAccount = ConsoleBankAppTools.deserialize(displayAccount, elem.toString());
+		   	displayAccount = terminalBankAppTools.deserialize(displayAccount, elem.toString());
 		   	
 			System.out.print("accountNumber:  " + displayAccount.accountNumber);
 			System.out.print(" - balance:  " + displayAccount.balance);
@@ -64,11 +64,11 @@ public class Employee extends Person
 
    	   		filepath = "Account/Pending/" + accNum + ".BankingApp";
    	   		
-   			approveAccount = ConsoleBankAppTools.deserialize(approveAccount, filepath);
+   			approveAccount = terminalBankAppTools.deserialize(approveAccount, filepath);
    			
    	   		filepath = "Account/" + accNum + ".BankingApp";
 
-   	   		ConsoleBankAppTools.serialize(approveAccount, filepath);
+   	   	terminalBankAppTools.serialize(approveAccount, filepath);
    	   			
    	    	File file = new File("Account/Pending/" + accNum + ".BankingApp");
    	    	
@@ -85,11 +85,11 @@ public class Employee extends Person
 
    	   		filepath = "Account/Pending/" + accNum + ".BankingApp";
    	   		
-   			denyAccount = ConsoleBankAppTools.deserialize(denyAccount, filepath);
+   			denyAccount = terminalBankAppTools.deserialize(denyAccount, filepath);
    			
    	   		filepath = "Account/Canceled/" + accNum + ".BankingApp";
 
-   	   		ConsoleBankAppTools.serialize(denyAccount, filepath);
+   	   	terminalBankAppTools.serialize(denyAccount, filepath);
    	   		
    	   		File delFile = new File("Account/Canceled/" + accNum + ".BankingApp");
    	   		
@@ -111,13 +111,13 @@ public class Employee extends Person
         
 	   	ArrayList<File> arrayList = new ArrayList<File>();
 	   	
-	   	ConsoleBankAppTools.getFiles("Account/", arrayList);
+	   	terminalBankAppTools.getFiles("Account/", arrayList);
 	   	
 	   	for(File elem : arrayList)
 	   	{
 	   		Account displayAccount = new Account();
 	   		
-		   	displayAccount = ConsoleBankAppTools.deserialize(displayAccount, elem.toString());
+		   	displayAccount = terminalBankAppTools.deserialize(displayAccount, elem.toString());
 
 			System.out.print("accountNumber:  " + displayAccount.accountNumber);
 			System.out.print(" - balance:  " + displayAccount.balance);

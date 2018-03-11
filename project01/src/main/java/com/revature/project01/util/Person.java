@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
-import com.revature.project01.tools.ConsoleBankAppTools;
+import com.revature.project01.tools.terminalBankAppTools;
 
 public class Person implements Serializable
 {
@@ -42,13 +42,13 @@ public class Person implements Serializable
 	   		   	
 	   	Person newUser;
 	   	
-	   	if(!(ConsoleBankAppTools.validate("Customer/", usname, pass)))
+	   	if(!(terminalBankAppTools.validate("Customer/", usname, pass)))
 	   	{ 	
    	 	    System.out.println("uname free");
 
 	   		newUser = new Customer(usname, pass, 'c'); 
 	   		String filename = ("Customer/" + usname + ".BankingApp");            
-	   		ConsoleBankAppTools.serialize(newUser, filename);	
+	   		terminalBankAppTools.serialize(newUser, filename);	
 
 	   	}
 	   	else
@@ -77,29 +77,29 @@ public class Person implements Serializable
 	   	
 	   	Person returnUser;
 	   	
-	   	if(ConsoleBankAppTools.validate("Customer/", usname, pass))
+	   	if(terminalBankAppTools.validate("Customer/", usname, pass))
 	   	{ 	
 	   		returnUser = new Customer(); 
 	   		String filename = ("Customer/" + usname + ".BankingApp");            
-	   		returnUser = ConsoleBankAppTools.deserialize(returnUser, filename);
+	   		returnUser = terminalBankAppTools.deserialize(returnUser, filename);
 	   		
 	   		if(!(returnUser.passwd.equals(pass)))
 	   			return false;
 	   	}
-	   	else if(ConsoleBankAppTools.validate("Employee/", usname, pass))
+	   	else if(terminalBankAppTools.validate("Employee/", usname, pass))
 	   	{ 	
 		   	returnUser = new Employee(); 
 	   		String filename = ("Employee/" + usname + ".BankingApp");            
-	   		returnUser = ConsoleBankAppTools.deserialize(returnUser, filename);
+	   		returnUser = terminalBankAppTools.deserialize(returnUser, filename);
 	   		
 	   		if(!(returnUser.passwd.equals(pass)))
 	   			return false;
 	   	}
-	   	else if(ConsoleBankAppTools.validate("Admin/", usname, pass))
+	   	else if(terminalBankAppTools.validate("Admin/", usname, pass))
 	   	{ 	
 		   	returnUser = new Admin(); 
 	   		String filename = ("Admin/" + usname + ".BankingApp");            
-	   		returnUser = ConsoleBankAppTools.deserialize(returnUser, filename);
+	   		returnUser = terminalBankAppTools.deserialize(returnUser, filename);
 	   		
 	   		if(!(returnUser.passwd.equals(pass)))
 	   			return false;
@@ -127,12 +127,12 @@ public class Person implements Serializable
 		System.out.println("owner + \".BankingApp\" = " + terminalBankApp.nextAccountNumber + ".BankingApp");
 
 		
-   		ConsoleBankAppTools.serialize(newAccount, "Account/Pending/" + terminalBankApp.nextAccountNumber + ".BankingApp");	
+   		terminalBankAppTools.serialize(newAccount, "Account/Pending/" + terminalBankApp.nextAccountNumber + ".BankingApp");	
 
 		System.out.println("terminalBankApp.nextAccountNumber " + terminalBankApp.nextAccountNumber);
 
    		terminalBankApp.nextAccountNumber++;
-   		ConsoleBankAppTools.setAccountNum(terminalBankApp.nextAccountNumber);
+   		terminalBankAppTools.setAccountNum(terminalBankApp.nextAccountNumber);
    		
 		System.out.println("terminalBankApp.nextAccountNumber " + terminalBankApp.nextAccountNumber);
 		
@@ -172,7 +172,7 @@ public class Person implements Serializable
 
    		filepath = "Account/" + input + ".BankingApp";
    		
-		withdrawAccount = ConsoleBankAppTools.deserialize(withdrawAccount, filepath);
+		withdrawAccount = terminalBankAppTools.deserialize(withdrawAccount, filepath);
    		
 	   	for(String i : withdrawAccount.owners)
 	   	{
@@ -185,7 +185,7 @@ public class Person implements Serializable
 				
 				withdrawAccount.balance -= ammount;
 				
-		   		ConsoleBankAppTools.serialize(withdrawAccount, filepath);
+		   		terminalBankAppTools.serialize(withdrawAccount, filepath);
 		   		
 			   	logger.debug(ammount + " withdrawn from " + withdrawAccount.accountNumber + " by " + this.uname);
 
@@ -218,11 +218,11 @@ public class Person implements Serializable
    		
 		System.out.println("file ---  " + filepath);
 
-   		depositAccount = ConsoleBankAppTools.deserialize(depositAccount, filepath);
+   		depositAccount = terminalBankAppTools.deserialize(depositAccount, filepath);
 		
 		depositAccount.balance += ammount;
 		
-   		ConsoleBankAppTools.serialize(depositAccount, filepath);	
+   		terminalBankAppTools.serialize(depositAccount, filepath);	
    		
 	   	logger.debug(ammount + " deposited to " + depositAccount.accountNumber + " by " + this.uname);
 
@@ -250,7 +250,7 @@ public class Person implements Serializable
    		
 		System.out.println("file ---  " + filepath);
 
-		withdrawAccount = ConsoleBankAppTools.deserialize(withdrawAccount, filepath);
+		withdrawAccount = terminalBankAppTools.deserialize(withdrawAccount, filepath);
    		
    		
 	   	for(String i : withdrawAccount.owners)
@@ -262,7 +262,7 @@ public class Person implements Serializable
 				
 				withdrawAccount.balance -= ammount;
 				
-		   		ConsoleBankAppTools.serialize(withdrawAccount, filepath);
+		   		terminalBankAppTools.serialize(withdrawAccount, filepath);
 		   		
 		   		
 		   		filepath2 = "Account/" + input2 + ".BankingApp";
@@ -271,11 +271,11 @@ public class Person implements Serializable
 		   		
 				System.out.println("file ---  " + filepath2);
 
-		   		depositAccount = ConsoleBankAppTools.deserialize(depositAccount, filepath2);
+		   		depositAccount = terminalBankAppTools.deserialize(depositAccount, filepath2);
 				
 				depositAccount.balance += ammount;
 				
-		   		ConsoleBankAppTools.serialize(depositAccount, filepath2);
+		   		terminalBankAppTools.serialize(depositAccount, filepath2);
 		   		
 			   	logger.debug(ammount + " transfered from " + withdrawAccount.accountNumber + " to " + 
 			   			     depositAccount.accountNumber + " by " + this.uname);

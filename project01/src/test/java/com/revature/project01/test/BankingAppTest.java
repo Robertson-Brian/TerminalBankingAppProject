@@ -5,7 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.revature.project01.tools.ConsoleBankAppTools;
+import com.revature.project01.tools.terminalBankAppTools;
 import com.revature.project01.util.Account;
 import com.revature.project01.util.Admin;
 import com.revature.project01.util.Customer;
@@ -41,7 +41,7 @@ public class BankingAppTest extends TestCase // extends TestCase
     	public ExpectedException expectedException = ExpectedException.none();
     	
     	private static terminalBankApp consoleBankApp = new terminalBankApp();
-    	private static ConsoleBankAppTools consoleBankAppTools = new ConsoleBankAppTools();
+    	private static terminalBankAppTools consoleBankAppTools = new terminalBankAppTools();
     	private static Admin admin = new Admin("aTest", "1234a", 'a');
     	private static Customer customer = new Customer("cTest", "1234b", 'c');
     	private static Account account = new Account();

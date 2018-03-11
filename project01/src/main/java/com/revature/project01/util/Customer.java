@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.revature.project01.tools.ConsoleBankAppTools;
+import com.revature.project01.tools.terminalBankAppTools;
 
 public class Customer extends Person 
 {
@@ -26,13 +26,13 @@ public class Customer extends Person
         
 	   	ArrayList<File> arrayList = new ArrayList<File>();
 	   	
-	   	ConsoleBankAppTools.getFiles("Account/", arrayList);
+	   	terminalBankAppTools.getFiles("Account/", arrayList);
 	   	
 	   	for(File elem : arrayList)
 	   	{
 	   		Account displayAccount = new Account();
 	   		
-		   	displayAccount = ConsoleBankAppTools.deserialize(displayAccount, elem.toString());
+		   	displayAccount = terminalBankAppTools.deserialize(displayAccount, elem.toString());
 		   	
 		   	for(String i : displayAccount.owners)
 		   	{
