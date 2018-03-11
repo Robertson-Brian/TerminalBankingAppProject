@@ -1,76 +1,26 @@
 package com.revature.project01.util;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Scanner;
+public class Admin extends Employee 
+{
+	public Admin() {} // default constructor
 
-import com.revature.project01.tools.BasicTools;
+	private static final long serialVersionUID = 2960031709505174922L;
 
-public class Admin extends Employee {
-
-	public Admin() {}
-
-	public Admin(String in1, String in2)
+	public Admin(String in1, String in2, Character stat)
 	{
-		super(in1, in2);
+		super(in1, in2, stat);
 	}
 	
-	private void approveDeny()
+	public Boolean deleteAccount()
 	{
-		// enter account num, approve or deny, read in account object, modify status and serialize it
+		// delete file
 		
-		String input;
-		
-   	   	System.out.println("enter account num");
-   	   	
-   	   	Scanner sc = new Scanner(System.in);
-   	   	input = sc.nextLine();
-
-   	   	
-	   	ArrayList<File> arrayList = new ArrayList<File>();
-
-	   	final String directoryName = System.getProperty("user.dir");
-	   	BasicTools.listf( directoryName, arrayList );
-	   	
-	   	Account newAccount = new Account();   		
-
-	   	for(File elem : arrayList)
-	   	{
-	   	    String tmp = elem.getName();
-	   	    	   	    
-	   	    logger.debug("elem.getname " + elem.getName());
-	   	    	
-		   	if(tmp.matches(input + "\\..+"))
-	   	    {
-			   	logger.debug("input " + input);
-		   	   		
-	   	   		newAccount = BasicTools.Deserialize(newAccount, tmp);
-	   	    
-	   	
-			   	System.out.println("   " + newAccount.accountNumber + "                   " + newAccount.balance +
-		                           "             " + newAccount.status);
-			   		 
-			   	if(newAccount.status.equals('p') || newAccount.status.equals('c'))
-			   	{
-			   		System.out.println("approve account creation : 1");
-			   	   	System.out.println("deny account creation : 2");
-		
-			   	   	input = sc.nextLine();
-			   	   	   	
-			   	   	if(input.equals("1"))
-			   	   		newAccount.status = 'a';
-			   	   	   	
-			   	   	else if(input.equals("1"))
-			   	   		newAccount.status = 'c';
-			   	   	
-			   	   	
-				   	System.out.println("   " + newAccount.accountNumber + "                   " + newAccount.balance +
-	                           "             " + newAccount.status);
-				   	
-			        BasicTools.serialize(newAccount, tmp);
-			   	} 	   	
-		   	}
-	   	}
-      	
+		return true;
 	}
+	
+	// alter other accounts
+	// view all accounts inherited from employee
+	// special admin menu with delete, and withdraw / deposit on all accounts
+	
 }
+

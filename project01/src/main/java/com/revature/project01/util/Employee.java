@@ -1,166 +1,173 @@
 package com.revature.project01.util;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.revature.project01.tools.BasicTools;
+import com.revature.project01.tools.ConsoleBankAppTools;
 
-public class Employee extends Person {
+public class Employee extends Person
+{
+	public Employee() {} // default constructor
 
-	public Employee() {}
+	private static final long serialVersionUID = 6164319139768525393L;
 
-	public Employee(String in1, String in2)
+	public Employee(String in1, String in2, Character stat)
 	{
-		super(in1, in2);
+		super(in1, in2, stat);
 	}
 	
-	public void viewUserInfo()
-	{  		
-   		logger.debug("\nclass - " + this.getClass().getName()); //will return the name (as String) (== "SomeClass")
-   		logger.debug("class - " + this.getClass()); //will return the SomeClass' Class object
-   		
-   		System.out.print("\nusername = " + uname);
-   		logger.debug(" : password = " + passwd);
-   		
-   		logger.debug("\n -- " + this.getClass().getName() + " -----------------\n");   
-   		
+	public Boolean approveAccount()
+	{
+	   	System.out.println("pending accounts: ");
+	   	
 	   	ArrayList<File> arrayList = new ArrayList<File>();
-
-	   	final String directoryName = System.getProperty("user.dir");
-	   	BasicTools.listf( directoryName, arrayList );
+	   	
+	   	ConsoleBankAppTools.getFiles("Account/Pending", arrayList);
 	   	
 	   	for(File elem : arrayList)
 	   	{
-	   	    String tmp = elem.getName();
-	   	    	   	    
-	   	 logger.debug("elem.getname " + elem.getName());
-	   	    	
-		   	if(tmp.matches("[A-Z,a-z,0-9]+\\.[A-Z,a-z,0-9]+.BankingApp"))
-	   	    {
-	   	   		Person newUser = new Customer();   		
+	   		Account displayAccount = new Account();
+	   		
+		   	displayAccount = ConsoleBankAppTools.deserialize(displayAccount, elem.toString());
+		   	
+			System.out.print("accountNumber:  " + displayAccount.accountNumber);
+			System.out.print(" - balance:  " + displayAccount.balance);
+			System.out.print(" - owner(s)");
 
-   	   			newUser = BasicTools.Deserialize(newUser, elem.toString());
+			for(String i : displayAccount.owners)
+		   	{				
+				System.out.print(", " + displayAccount.owners);
 
-		   	    if(newUser.uname != null)
-		   	    {
-		   	    	System.out.println("\n-- username : " + newUser.uname + " - password : " + newUser.passwd);
-		   	    	
-		   	   		System.out.println("-- Account number ------- Balance ------- Status -------");
-		   	    
-	   	        
-		   		   	ArrayList<File> arrayList2 = new ArrayList<File>();
-	
-		   		   	final String directoryName2 = System.getProperty("user.dir");
-		   		   	BasicTools.listf( directoryName2, arrayList2 );
-		   		   	
-		   		   	for(File elem2 : arrayList2)
-		   		   	{
-		   		   	    String tmp2 = elem2.getName();
-		   		   	    
-			   		   	 logger.debug("elem2.getname " + elem2.getName());
-			   		   	 logger.debug("uname " + newUser.uname + " passwd " + newUser.passwd);
-
-	   			   	    if(tmp2.matches(".+" + newUser.uname + "\\." + newUser.passwd + ".BankingApp"))
-		   		   	    {
-		   		   	   		Account newAccount = new Account();   		
-		   		   	   		
-	   		   	   			newAccount = BasicTools.Deserialize(newAccount, elem2.toString());
-
-		   		   	        if(newAccount.accountNumber != null)
-		   		   	        {
-		   		   	        		System.out.println("   " + newAccount.accountNumber + "                   " + newAccount.balance +
-		   		   	        				           "             " + newAccount.status);
-		   		   	        }
-		   		   	    }
-		   		   	}
-		   	    }
-	   	    }
-	   	} 
-	   	   
-        
-   		int input = 0;
-
-   		// apply for new account, transfer funds, apply to make a join accounts, close account, exit?
-   			
-   	   	System.out.println("\n - Account options ------------------------------");
-   	   	System.out.println("|                                                    |");
-   	   	System.out.println("| To approve or deny an account, press 1 & return            |");
-   	   	System.out.println("| To approve or deny a joint account, press 2 & return       |");
-   	   	System.out.println("| To exit, press 3 & return                          |");
-   	   	System.out.println("|                                                    |");
-   	   	System.out.println(" ----------------------------------------------------");
-   	   		
-   	   	Scanner sc = new Scanner(System.in);
-   	   	input = sc.nextInt();
-
-   	   	if(input == 1)
-   	   		approveDeny();
-   		
-	}
-	
-	private void approveDeny()
-	{
-		// enter account num, approve or deny, read in account object, modify status and serialize it
-		
-		String input;
-		
-   	   	System.out.println("enter account num");
-   	   	
-   	   	Scanner sc = new Scanner(System.in);
-   	   	input = sc.nextLine();
-
-   	   	
-	   	ArrayList<File> arrayList = new ArrayList<File>();
-
-	   	final String directoryName = System.getProperty("user.dir");
-	   	BasicTools.listf( directoryName, arrayList );
-	   	
-	   	Account newAccount = new Account();   		
-
-	   	for(File elem : arrayList)
-	   	{
-	   	    String tmp = elem.getName();
-	   	    	   	    
-	   	    logger.debug("elem.getname " + elem.getName());
-	   	    	
-		   	if(tmp.matches(input + "\\..+"))
-	   	    {
-			   	logger.debug("input " + input);
-		   	   		
-	   	   		newAccount = BasicTools.Deserialize(newAccount, tmp);
-	   	    
-	   	
-			   	System.out.println("   " + newAccount.accountNumber + "                   " + newAccount.balance +
-		                           "             " + newAccount.status);
-			   		 
-			   	if(newAccount.status.equals('p') || newAccount.status.equals('c'))
-			   	{
-			   		System.out.println("approve account creation : 1");
-			   	   	System.out.println("deny account creation : 2");
-		
-			   	   	input = sc.nextLine();
-			   	   	   	
-			   	   	if(input.equals("1"))
-			   	   		newAccount.status = 'a';
-			   	   	   	
-			   	   	else
-			   	   		newAccount.status = 'c';
-			   	   	
-				   	System.out.println("   " + newAccount.accountNumber + "                   " + newAccount.balance +
-	                           "             " + newAccount.status);
-				   	
-			        BasicTools.serialize(newAccount, tmp);
-			   	} 	   	
 		   	}
+			System.out.print("\n");
+
 	   	}
-      	
+	   	
+    	String selection = "z";
+    	String accNum;
+
+		System.out.println("To approve an account press x");
+		System.out.println("To deny an account press z");
+
+   		Scanner sc = new Scanner(System.in);
+   		selection = sc.nextLine();
+   		
+		System.out.println("please enter an account number");
+   		accNum = sc.nextLine();
+
+   		if(selection.equals("x"))
+   		{
+   	    	String filepath;
+
+   	   		Account approveAccount = new Account();
+
+   	   		filepath = "Account/Pending/" + accNum + ".BankingApp";
+   	   		
+   			approveAccount = ConsoleBankAppTools.deserialize(approveAccount, filepath);
+   			
+   	   		filepath = "Account/" + accNum + ".BankingApp";
+
+   	   		ConsoleBankAppTools.serialize(approveAccount, filepath);
+   	   			
+   	    	File file = new File("Account/Pending/" + accNum + ".BankingApp");
+   	    	
+   		   	logger.debug("account " + approveAccount.accountNumber + " approved");
+
+   	    	file.delete();  
+   		}
+   			
+   		if(selection.equals("z"))
+   		{
+   	    	String filepath;
+
+   	   		Account denyAccount = new Account();
+
+   	   		filepath = "Account/Pending/" + accNum + ".BankingApp";
+   	   		
+   			denyAccount = ConsoleBankAppTools.deserialize(denyAccount, filepath);
+   			
+   	   		filepath = "Account/Canceled/" + accNum + ".BankingApp";
+
+   	   		ConsoleBankAppTools.serialize(denyAccount, filepath);
+   	   		
+   	   		File delFile = new File("Account/Canceled/" + accNum + ".BankingApp");
+   	   		
+   		   	logger.debug("account " + denyAccount.accountNumber + " denied");
+   	        
+   	   		delFile.delete();
+   		}
+		
+		return true;
+	}
+
+	public void viewUserInfo()
+	{
+	   	System.out.println("\n\nUser Info --------------------------------^ ");
+	   	System.out.print("uname = " + uname);
+	   	System.out.println(" - passwd = " + passwd);
+	   	System.out.print("this.uname = " + this.uname);
+        System.out.println(" - this.passwd = " + this.passwd + "\n");
+        
+	   	ArrayList<File> arrayList = new ArrayList<File>();
+	   	
+	   	ConsoleBankAppTools.getFiles("Account/", arrayList);
+	   	
+	   	for(File elem : arrayList)
+	   	{
+	   		Account displayAccount = new Account();
+	   		
+		   	displayAccount = ConsoleBankAppTools.deserialize(displayAccount, elem.toString());
+
+			System.out.print("accountNumber:  " + displayAccount.accountNumber);
+			System.out.print(" - balance:  " + displayAccount.balance);
+			System.out.print(" - owner(s)");
+
+			for(String i : displayAccount.owners)
+		   	{				
+				System.out.print(", " + displayAccount.owners);
+
+		   	}
+			System.out.print("\n");
+
+	   	}
 	}
 	
+	public void personMenu()
+	{
+		this.viewUserInfo();
 
+    	String input = "z";
+    	do
+    	{
+    		System.out.println(" -- Customer account menu \n");
+    		
+    		System.out.println(" -- To approve / deny accounts press a");
+    		System.out.println(" -- To deposit into a customers account press j");
+    		System.out.println(" -- To  press w");
+    		System.out.println(" -- To  press d");
+    		System.out.println(" -- To  press t");
+    		
+    		System.out.println(" -- To go back press b");
+    		
+	   		Scanner sc = new Scanner(System.in);
+	   		input = sc.nextLine();
+	   		
+	   		if(input.equals("a"))
+	   			this.approveAccount();
+	   		
+	   		else if(input.equals("j"))
+	   			this.applyTojoinAccounts();  // send account num?
 
+	   		else if(input.equals("w"))
+	   			this.withdraw();
+	   		
+	   		else if(input.equals("d"))
+	   			this.deposit();
+	   		
+	   		else if(input.equals("t"))
+	   			this.transfer();
+    	}
+    	while(!(input.equals("b")));
+	}	
 }
