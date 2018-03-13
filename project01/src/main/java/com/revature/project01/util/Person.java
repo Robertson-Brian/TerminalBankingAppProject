@@ -1,27 +1,26 @@
 package com.revature.project01.util;
 
-import java.io.File;
-import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
-import com.revature.project01.tools.terminalBankAppTools;
+import com.revature.project01.tools.DAO;
 
-public class Person implements Serializable
+public class Person // implements Serializable
 {
     static final Logger logger = Logger.getLogger(terminalBankApp.class);
 
-	private static final long serialVersionUID = -3522257060495844756L;
 	protected String uname;
 	protected String passwd;
-	Character status;
+	Integer status;
 	ArrayList<String> accounts = new ArrayList<String>();
 
 	public Person() {} // default constructor
 	
-	public Person(String in1, String in2, Character stat)
+	public Person(String in1, String in2, Integer stat)
 	{
 		uname  = in1;
 		passwd = in2;
@@ -32,6 +31,8 @@ public class Person implements Serializable
 	{	
 		String usname;
     	String pass;
+    	String fname;
+    	String lname;
     	
 	   	Scanner sc = new Scanner(System.in);
 	   	System.out.print("Enter your username: ");
@@ -39,26 +40,21 @@ public class Person implements Serializable
 			
 	   	System.out.print("Enter your password: ");
 	   	pass = sc.nextLine();
-	   		   	
-	   	Person newUser;
+
+	   	System.out.print("Enter your first name: ");
+	   	fname = sc.nextLine();
+			
+	   	System.out.print("Enter your last name: ");
+	   	lname = sc.nextLine();
 	   	
-	   	if(!(terminalBankAppTools.validate("Customer/", usname, pass)))
-	   	{ 	
-   	 	    System.out.println("uname free");
+	   	Person newUser = new Customer(usname, pass, 1);
 
-	   		newUser = new Customer(usname, pass, 'c'); 
-	   		String filename = ("Customer/" + usname + ".BankingApp");            
-	   		terminalBankAppTools.serialize(newUser, filename);	
+		String sql = "INSERT INTO USERTBL (UNAME, FIRSTNAME, LASTNAME, PASSWD, UTYPE) VALUES (?, ?, ?, ?, 1)";
 
-	   	}
-	   	else
-	   	{
-		   	System.out.println("Account already exists, please choose other username and password\n");
-	   		return false;
-	   	}
+		DAO.SQLIn(sql, usname, pass, fname, lname);
+		
 	   	newUser.personMenu();   		
 	   	
-	   	logger.debug("new user " + usname + " " + pass + " created");
 
    		return true;
 	}
@@ -75,74 +71,86 @@ public class Person implements Serializable
 	   	System.out.print("Enter your password: ");
 	   	pass = sc.nextLine();
 	   	
-	   	Person returnUser;
-	   	
-	   	if(terminalBankAppTools.validate("Customer/", usname, pass))
-	   	{ 	
-	   		returnUser = new Customer(); 
-	   		String filename = ("Customer/" + usname + ".BankingApp");            
-	   		returnUser = terminalBankAppTools.deserialize(returnUser, filename);
-	   		
-	   		if(!(returnUser.passwd.equals(pass)))
-	   			return false;
-	   	}
-	   	else if(terminalBankAppTools.validate("Employee/", usname, pass))
-	   	{ 	
-		   	returnUser = new Employee(); 
-	   		String filename = ("Employee/" + usname + ".BankingApp");            
-	   		returnUser = terminalBankAppTools.deserialize(returnUser, filename);
-	   		
-	   		if(!(returnUser.passwd.equals(pass)))
-	   			return false;
-	   	}
-	   	else if(terminalBankAppTools.validate("Admin/", usname, pass))
-	   	{ 	
-		   	returnUser = new Admin(); 
-	   		String filename = ("Admin/" + usname + ".BankingApp");            
-	   		returnUser = terminalBankAppTools.deserialize(returnUser, filename);
-	   		
-	   		if(!(returnUser.passwd.equals(pass)))
-	   			return false;
-	   	}
-	   	else
-	   	{
-		   	System.out.println("User name or password not found\n");
+	   	Person returnUser = null;
+	
+		String sql = "SELECT * FROM USERTBL WHERE UNAME = ?"; 		// select * from usrtbl where uname = usname;
 
-	   		return false;
-	   	}
-    	
-        returnUser.personMenu();   		
-	   	
-	   	logger.debug(usname + " " + pass + " logged in");
-        
+		ResultSet rs = DAO.SQLIn(sql, usname);
+						
+		try 
+		{
+			while (rs.next())
+			{
+				String name = rs.getString("UNAME");	// check if usrtbl.passwd = pass - then initialize person returnUser.personMenu();
+				String pass2 = rs.getString("PASSWD");
+				Integer utype = rs.getInt("UTYPE");
+				
+				if(pass.equals(pass2))
+				{
+				   	//logger.debug(usname + " " + pass + " logged in");
+				   	
+				   	if(utype == 1)
+				   	{
+				   		returnUser = new Customer(name, pass2, utype);
+				   	}
+				   	
+				   	else if(utype == 2)
+				   	{
+				   		returnUser = new Employee(name, pass2, utype);
+				   	}
+
+				   	else if(utype == 3)
+				   	{
+				   		returnUser = new Admin(name, pass2, utype);
+				   	}
+				   	
+				   	returnUser.personMenu();
+				}
+			}
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+   	        
    		return true;
 	}
 	
-	public static Boolean applyForAccount(String owner)
+	public static Boolean applyForAccount(String owner)/////////////////////////////////////////////////////////////////////////////////////////////////////
 	{
-		// add new account to the pending folder	
+		String a = "1";
+		String b = "1";
 		
-		Account newAccount = new Account(terminalBankApp.nextAccountNumber, 0.0, 'a', owner);
+		String sql = "INSERT INTO ACCOUNTTBL (ACCID, BALANCE, ACCTYPE, STATUS) VALUES (1, 0.00, ?, ?)";
+
+		ResultSet rs = DAO.SQLIn(sql, a, b);
+
+		sql = "SELECT MAX(ACCID) FROM ACCOUNTTBL";
+
+		rs = DAO.SQLIn(sql);
 		
-		System.out.println("owner + \".BankingApp\" = " + terminalBankApp.nextAccountNumber + ".BankingApp");
-
+		Integer accnum = 0;
+		try 
+		{
+			while (rs.next())
+			{			
+				accnum = rs.getInt("MAX(ACCID)");
+			}
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
 		
-   		terminalBankAppTools.serialize(newAccount, "Account/Pending/" + terminalBankApp.nextAccountNumber + ".BankingApp");	
+		sql = "INSERT INTO USERACCJUNC (USERACCJUNCID, UNAME, ACCNUM) VALUES (1, ?, ?)";
 
-		System.out.println("terminalBankApp.nextAccountNumber " + terminalBankApp.nextAccountNumber);
+		rs = DAO.SQLIn(sql, owner, Integer.toString(accnum));
 
-   		terminalBankApp.nextAccountNumber++;
-   		terminalBankAppTools.setAccountNum(terminalBankApp.nextAccountNumber);
-   		
-		System.out.println("terminalBankApp.nextAccountNumber " + terminalBankApp.nextAccountNumber);
-		
-	   	logger.debug(owner + " applied for account");
-
-
+	   	System.out.println("------------- Account application success -------------\n");
 		return true;
 	}
 	
-	public Boolean applyTojoinAccounts()
+	public Boolean applyTojoinAccounts()///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		// enter account num
 		// check if account num exists
@@ -162,39 +170,27 @@ public class Person implements Serializable
 	{
     	String input = "z";
     	double ammount;
-    	String filepath;
 
 		System.out.println("Enter the number of the account you would like to make a withdraw from");
    		Scanner sc = new Scanner(System.in);
    		input = sc.nextLine();
    		
-   		Account withdrawAccount = new Account();
+		System.out.println("Enter the ammount of meows to withdraw");
+		ammount = sc.nextDouble();
+		
+//   		Account withdrawAccount = new Account();
 
-   		filepath = "Account/" + input + ".BankingApp";
    		
-		withdrawAccount = terminalBankAppTools.deserialize(withdrawAccount, filepath);
-   		
-	   	for(String i : withdrawAccount.owners)
-	   	{
-			//System.out.println(i);
-			
-			if(i.equals(this.uname))
-			{
-				System.out.println("Enter the ammount");
-				ammount = sc.nextInt();
-				
-				withdrawAccount.balance -= ammount;
-				
-		   		terminalBankAppTools.serialize(withdrawAccount, filepath);
-		   		
-			   	logger.debug(ammount + " withdrawn from " + withdrawAccount.accountNumber + " by " + this.uname);
+		if(ammount > 0)
+		{
+			String sql = "update ACCOUNTTBL set BALANCE = BALANCE - ? where ACCID = ?";
 
-		   		return 1;
-			}
-
-	   	}
-   		
-		System.out.println("You do not have permission to withdraw from that account");
+			DAO.SQLIn(sql, Double.toString(ammount), input);
+		}
+		else
+			System.out.println("You may only withdraw a positive ammount");
+  		
+//		System.out.println("You do not have permission to withdraw from that account"); ///////////////////////////
 		
 		return 0;
 	}
@@ -203,89 +199,44 @@ public class Person implements Serializable
 	{
     	String input = "z";
     	double ammount;
-    	String filepath;
 
 		System.out.println("Enter the number of the account you would like to make a deposit to");
    		Scanner sc = new Scanner(System.in);
    		input = sc.nextLine();
    		
-		System.out.println("Enter the ammount");
-		ammount = sc.nextInt();
-
-   		Account depositAccount = new Account();
-
-   		filepath = "Account/" + input + ".BankingApp";
-   		
-		System.out.println("file ---  " + filepath);
-
-   		depositAccount = terminalBankAppTools.deserialize(depositAccount, filepath);
+		System.out.println("Enter the ammount of meows to deposit");
+		ammount = sc.nextDouble();
 		
-		depositAccount.balance += ammount;
 		
-   		terminalBankAppTools.serialize(depositAccount, filepath);	
-   		
-	   	logger.debug(ammount + " deposited to " + depositAccount.accountNumber + " by " + this.uname);
+		if(ammount > 0)
+		{
+			String sql = "update ACCOUNTTBL set BALANCE = BALANCE + ? where ACCID = ?";
+
+			DAO.SQLIn(sql, Double.toString(ammount), input);
+		}
+		else
+			System.out.println("You may only deposit a positive ammount");
+
 
 		return 1;
 	}
 	
-	public int transfer()
+	public int transfer()/////////////////////////////////////// stored procedure? //////////////////////////////////////////////////////////////
 	{
-    	String input = "z";
-    	String input2 = "z";
-    	double ammount;
-    	String filepath;
-    	String filepath2;
-
-		System.out.println("Enter the number of the account you would like to make a withdraw from");
-   		Scanner sc = new Scanner(System.in);
-   		input = sc.nextLine();
-   
-		System.out.println("Enter the number of the account you would like to make a deposit to");
-   		input2 = sc.nextLine();
+//    	String input = "z";
+//    	String input2 = "z";
+//    	double ammount;
+//    	String filepath;
+//    	String filepath2;
+//
+//		System.out.println("Enter the number of the account you would like to make a withdraw from");
+//   		Scanner sc = new Scanner(System.in);
+//   		input = sc.nextLine();
+//   
+//		System.out.println("Enter the number of the account you would like to make a deposit to");
+//   		input2 = sc.nextLine();
    		
-   		Account withdrawAccount = new Account();
-
-   		filepath = "Account/" + input + ".BankingApp";
-   		
-		System.out.println("file ---  " + filepath);
-
-		withdrawAccount = terminalBankAppTools.deserialize(withdrawAccount, filepath);
-   		
-   		
-	   	for(String i : withdrawAccount.owners)
-	   	{			
-			if(i.equals(this.uname))
-			{
-				System.out.println("Enter the ammount");
-				ammount = sc.nextInt();
-				
-				withdrawAccount.balance -= ammount;
-				
-		   		terminalBankAppTools.serialize(withdrawAccount, filepath);
-		   		
-		   		
-		   		filepath2 = "Account/" + input2 + ".BankingApp";
-
-		   		Account depositAccount = new Account();
-		   		
-				System.out.println("file ---  " + filepath2);
-
-		   		depositAccount = terminalBankAppTools.deserialize(depositAccount, filepath2);
-				
-				depositAccount.balance += ammount;
-				
-		   		terminalBankAppTools.serialize(depositAccount, filepath2);
-		   		
-			   	logger.debug(ammount + " transfered from " + withdrawAccount.accountNumber + " to " + 
-			   			     depositAccount.accountNumber + " by " + this.uname);
-		   		
-		   		return 1;
-			}
-
-	   	}
-   		
-		System.out.println("You do not have permission to withdraw from that account");
+//		System.out.println("You do not have permission to withdraw from that account");
 		
 		return 0;
 	}
@@ -299,6 +250,8 @@ public class Person implements Serializable
 
 	public void personMenu()
 	{
+	   	System.out.println("person menu -------------------------------- ");
+
 		viewUserInfo();
 	}
 

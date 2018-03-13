@@ -2,6 +2,7 @@ package com.revature.project01.test;
 
 import org.junit.Rule;
 
+
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
@@ -35,7 +36,7 @@ import org.junit.rules.ExpectedException;
 /**
  * Unit test for simple App.
  */
-public class BankingAppTest extends TestCase // extends TestCase
+public class terminalBankingAppTest // extends TestCase // for some reason this breaks it?
     {
     	@Rule
     	public ExpectedException expectedException = ExpectedException.none();

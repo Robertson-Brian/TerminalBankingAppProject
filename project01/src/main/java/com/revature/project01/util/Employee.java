@@ -1,103 +1,24 @@
 package com.revature.project01.util;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 
-import com.revature.project01.tools.terminalBankAppTools;
+import com.revature.project01.tools.DAO;
 
 public class Employee extends Person
 {
 	public Employee() {} // default constructor
 
-	private static final long serialVersionUID = 6164319139768525393L;
-
-	public Employee(String in1, String in2, Character stat)
+	public Employee(String in1, String in2, Integer stat)
 	{
 		super(in1, in2, stat);
 	}
 	
-	public Boolean approveAccount()
+	public Boolean approveAccount()//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	{
 	   	System.out.println("pending accounts: ");
 	   	
-	   	ArrayList<File> arrayList = new ArrayList<File>();
-	   	
-	   	terminalBankAppTools.getFiles("Account/Pending", arrayList);
-	   	
-	   	for(File elem : arrayList)
-	   	{
-	   		Account displayAccount = new Account();
-	   		
-		   	displayAccount = terminalBankAppTools.deserialize(displayAccount, elem.toString());
-		   	
-			System.out.print("accountNumber:  " + displayAccount.accountNumber);
-			System.out.print(" - balance:  " + displayAccount.balance);
-			System.out.print(" - owner(s)");
-
-			for(String i : displayAccount.owners)
-		   	{				
-				System.out.print(", " + displayAccount.owners);
-
-		   	}
-			System.out.print("\n");
-
-	   	}
-	   	
-    	String selection = "z";
-    	String accNum;
-
-		System.out.println("To approve an account press x");
-		System.out.println("To deny an account press z");
-
-   		Scanner sc = new Scanner(System.in);
-   		selection = sc.nextLine();
-   		
-		System.out.println("please enter an account number");
-   		accNum = sc.nextLine();
-
-   		if(selection.equals("x"))
-   		{
-   	    	String filepath;
-
-   	   		Account approveAccount = new Account();
-
-   	   		filepath = "Account/Pending/" + accNum + ".BankingApp";
-   	   		
-   			approveAccount = terminalBankAppTools.deserialize(approveAccount, filepath);
-   			
-   	   		filepath = "Account/" + accNum + ".BankingApp";
-
-   	   	terminalBankAppTools.serialize(approveAccount, filepath);
-   	   			
-   	    	File file = new File("Account/Pending/" + accNum + ".BankingApp");
-   	    	
-   		   	logger.debug("account " + approveAccount.accountNumber + " approved");
-
-   	    	file.delete();  
-   		}
-   			
-   		if(selection.equals("z"))
-   		{
-   	    	String filepath;
-
-   	   		Account denyAccount = new Account();
-
-   	   		filepath = "Account/Pending/" + accNum + ".BankingApp";
-   	   		
-   			denyAccount = terminalBankAppTools.deserialize(denyAccount, filepath);
-   			
-   	   		filepath = "Account/Canceled/" + accNum + ".BankingApp";
-
-   	   	terminalBankAppTools.serialize(denyAccount, filepath);
-   	   		
-   	   		File delFile = new File("Account/Canceled/" + accNum + ".BankingApp");
-   	   		
-   		   	logger.debug("account " + denyAccount.accountNumber + " denied");
-   	        
-   	   		delFile.delete();
-   		}
-		
 		return true;
 	}
 
@@ -106,31 +27,91 @@ public class Employee extends Person
 	   	System.out.println("\n\nUser Info --------------------------------^ ");
 	   	System.out.print("uname = " + uname);
 	   	System.out.println(" - passwd = " + passwd);
-	   	System.out.print("this.uname = " + this.uname);
-        System.out.println(" - this.passwd = " + this.passwd + "\n");
         
-	   	ArrayList<File> arrayList = new ArrayList<File>();
-	   	
-	   	terminalBankAppTools.getFiles("Account/", arrayList);
-	   	
-	   	for(File elem : arrayList)
-	   	{
-	   		Account displayAccount = new Account();
-	   		
-		   	displayAccount = terminalBankAppTools.deserialize(displayAccount, elem.toString());
+		String sql = "SELECT USERTBL.UNAME, USERTBL.FIRSTNAME, USERTBL.LASTNAME, ACCOUNTTBL.ACCID, ACCOUNTTBL.BALANCE, ACCOUNTTBL.STATUS, ACCOUNTTBL.ACCTYPE "
+				   + "FROM USERTBL JOIN USERACCJUNC ON USERTBL.UNAME = USERACCJUNC.UNAME JOIN ACCOUNTTBL "
+				   + "ON USERACCJUNC.ACCNUM = ACCOUNTTBL.ACCID";
+		
+		ResultSet rs = DAO.SQLIn(sql);
+						
+		System.out.println("\n -- username - First name - Last name - Account ID - Balance - Status - Type\n");
+		
+		try 
+		{
+			while (rs.next())
+			{			
+				System.out.print("    ");
 
-			System.out.print("accountNumber:  " + displayAccount.accountNumber);
-			System.out.print(" - balance:  " + displayAccount.balance);
-			System.out.print(" - owner(s)");
+				String uname = rs.getString("UNAME");
 
-			for(String i : displayAccount.owners)
-		   	{				
-				System.out.print(", " + displayAccount.owners);
+				System.out.print(uname);
+				for (int x = uname.length(); x < 11; ++x) 
+				{
+					System.out.print(' ');	
+				}
+				
+				String fname = rs.getString("FIRSTNAME");
 
-		   	}
-			System.out.print("\n");
+				System.out.print(fname);
+				for (int x = fname.length(); x < 13; ++x) 
+				{
+					System.out.print(' ');	
+				}
+				
+				String lname = rs.getString("LASTNAME");
+				
+				System.out.print(lname);
+				for (int x = lname.length(); x < 12; ++x) 
+				{
+					System.out.print(' ');	
+				}
+				
+				Integer accnum = rs.getInt("ACCID");
+				
+				System.out.print(accnum);
+				for (int x = Integer.toString(accnum).length(); x < 13; ++x) 
+				{
+					System.out.print(' ');	
+				}
+				
+				Double bal = rs.getDouble("BALANCE");
+				
+				System.out.print(bal);
+				for (int x = Double.toString(bal).length(); x < 10; ++x) 
+				{
+					System.out.print(' ');	
+				}
+				
+				Integer stat = rs.getInt("STATUS");
+				
+				if(stat == 1)
+					System.out.print("Active   ");	
+				
+				else if(stat == 2)
+					System.out.print("Pending  ");	
+				
+				else if(stat == 3)
+					System.out.print("Canceled ");
+				
 
-	   	}
+				Integer type = rs.getInt("ACCTYPE");
+				
+				if(stat == 1)
+					System.out.print("Checking ");	
+				
+				else if(stat == 2)
+					System.out.print("Savings  ");	
+				
+				else if(stat == 3)
+					System.out.print("Other    ");
+				
+				System.out.println("  ");
+			}
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	public void personMenu()
@@ -140,13 +121,13 @@ public class Employee extends Person
     	String input = "z";
     	do
     	{
-    		System.out.println(" -- Customer account menu \n");
+    		System.out.println("\n -- Employee account menu \n");
     		
     		System.out.println(" -- To approve / deny accounts press a");
     		System.out.println(" -- To deposit into a customers account press j");
-    		System.out.println(" -- To  press w");
-    		System.out.println(" -- To  press d");
-    		System.out.println(" -- To  press t");
+//    		System.out.println(" -- To  press w");
+//    		System.out.println(" -- To  press d");
+//    		System.out.println(" -- To  press t");
     		
     		System.out.println(" -- To go back press b");
     		
